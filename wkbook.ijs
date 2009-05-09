@@ -3,7 +3,7 @@ NB. Workbook object
 NB.  - stores properties of Workbook
 
 coclass 'oxmlwkbook'
-coinsert 'taraxml'
+coinsert 'ptaraxml'
 
 create=: 3 : 0
   FLN=: y   NB. Store filename as global

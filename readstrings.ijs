@@ -49,4 +49,4 @@ process=: 3 : 0
   res
 )
 
-getStrings_taraxml_=: process_oxmlstrings_
+getStrings_ptaraxml_=: process_oxmlstrings_

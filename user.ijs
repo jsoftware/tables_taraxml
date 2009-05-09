@@ -1,6 +1,6 @@
 NB. =========================================================
 NB. Define User Interface verbs
-coclass 'taraxml'
+coclass 'ptaraxml'
 
 NB.*readxlxsheets v Reads one or more sheets from an Excel file
 NB. returns: 2-column matrix with a row for each sheet
@@ -23,7 +23,7 @@ try.
   shts=. boxopen x
   (msg=. 'file not found') assert fexist fln
 
-  nb=. fln conew 'poxmlwkbook'
+  nb=. fln conew 'oxmlwkbook'
   GETSTRG__nb=: strng
   shtnames=. SHEETNAMES__nb
   if.     a: -: shts               do. shtidx=. i. #shtnames NB. x is ''

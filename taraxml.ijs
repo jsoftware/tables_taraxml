@@ -1,12 +1,12 @@
 NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
 NB.  retrieve contents of specified sheets
-NB. built from project: ~Addons/tables/sheetxml/sheetxml
+NB. built from project: ~Addons/tables/taraxml/taraxml
 
 require 'xml/sax arc/zip/zfiles'
 
 NB. =========================================================
 NB. Define User Interface verbs
-coclass 'psheetxml'
+coclass 'ptaraxml'
 
 NB.*readxlxsheets v Reads one or more sheets from an Excel file
 NB. returns: 2-column matrix with a row for each sheet
@@ -29,7 +29,7 @@ try.
   shts=. boxopen x
   (msg=. 'file not found') assert fexist fln
 
-  nb=. fln conew 'poxmlwkbook'
+  nb=. fln conew 'oxmlwkbook'
   GETSTRG__nb=: strng
   shtnames=. SHEETNAMES__nb
   if.     a: -: shts               do. shtidx=. i. #shtnames NB. x is ''
@@ -62,8 +62,8 @@ NB. =========================================================
 NB. Workbook object 
 NB.  - stores properties of Workbook
 
-coclass 'poxmlwkbook'
-coinsert 'psheetxml'
+coclass 'oxmlwkbook'
+coinsert 'ptaraxml'
 
 create=: 3 : 0
   FLN=: y   NB. Store filename as global
@@ -81,10 +81,10 @@ NB. =========================================================
 NB. Reading workbook (xl/workbook.xml)
 NB. reads list of worksheet names as boxed strings from workbook.xml
 
-saxclass 'poxmlbook'
+saxclass 'oxmlbook'
 
 Note 'Testing'
-process_poxmlbook_ fread jpath '~Projects/openxml/test/workbook.xml'
+process_oxmlbook_ fread jpath '~addons/tables/taraxml/test/workbook.xml'
 )
 
 Note 'XML hierachy of interest'
@@ -127,17 +127,17 @@ process=: 3 : 0
   res
 )
 
-getSheetNames_psheetxml_=: process_poxmlbook_
+getSheetNames_ptaraxml_=: process_oxmlbook_
 
 
 NB. =========================================================
 NB. Reading Shared Strings (xl/sharedStrings.xml)
 NB. reads list of boxed strings from sharedStrings
 
-saxclass 'poxmlstrings'
+saxclass 'oxmlstrings'
 
 Note 'Testing'
-process_poxmlstrings_ fread jpath '~Projects/sheetxml/test/sharedStrings.xml'
+process_oxmlstrings_ fread jpath '~addons/tables/taraxml/test/sharedStrings.xml'
 )
 
 Note 'XML hierachy of interest'
@@ -181,18 +181,18 @@ process=: 3 : 0
   res
 )
 
-getStrings_psheetxml_=: process_poxmlstrings_
+getStrings_ptaraxml_=: process_oxmlstrings_
 
 
 NB. =========================================================
 NB. Reading Worksheets (xl/worksheets/sheet?.xml)
 NB. reads data from a worksheet to a boxed matrix
 
-saxclass 'poxmlsheet'
+saxclass 'oxmlsheet'
 
 Note 'Testing'
-process_poxmlsheet_ fread jpath '~Projects/sheetxml/test/sheet1.xml'
-process_poxmlsheet_ fread jpath '~Projects/sheetxml/test/sheet2.xml'
+process_oxmlsheet_ fread jpath '~addons/tables/taraxml/test/sheet1.xml'
+process_oxmlsheet_ fread jpath '~addons/tables/taraxml/test/sheet2.xml'
 )
 
 Note 'XML hierachy of interest'
@@ -267,11 +267,11 @@ process=: 4 : 0
   res
 )
 
-getSheet_psheetxml_=: process_poxmlsheet_
+getSheet_ptaraxml_=: process_oxmlsheet_
 
 
 NB. =========================================================
 NB. Export to z locale
-readxlxsheets_z_=: readxlxsheets_psheetxml_
-readxlxsheetnames_z_=: readxlxsheetnames_psheetxml_
+readxlxsheets_z_=: readxlxsheets_ptaraxml_
+readxlxsheetnames_z_=: readxlxsheetnames_ptaraxml_
 
