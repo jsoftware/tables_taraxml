@@ -1,0 +1,51 @@
+NB. project file: c:/users/rsherloc/documents/j602-user/jsrc/addons/tables/taraxml/taraxml
+
+coclass 'jproject'
+
+PRIMARYFILES=: 0 : 0
+~Addons/tables/taraxml/init
+~Addons/tables/taraxml/user
+~Addons/tables/taraxml/wkbook
+~Addons/tables/taraxml/readbook
+~Addons/tables/taraxml/readstrings
+~Addons/tables/taraxml/readsheet
+~Addons/tables/taraxml/zfns
+)
+
+PRIMARYLIBS=: ''
+
+DEVFILES=: ''
+
+DEVLIBS=: ''
+
+OTHERFILES=: 0 : 0
+~Addons/tables/taraxml/history.txt
+~Addons/tables/taraxml/manifest.ijs
+~Addons/tables/taraxml/test/taraxmltest.ijs
+~Addons/tables/taraxml/test/test_taraxml.ijs
+)
+
+TARGETFILE=: '~Addons/tables/taraxml/taraxml.ijs'
+
+TARGETLOCALE=: ''
+
+TARGETHEADER=: 0 : 0
+NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
+NB.  retrieve contents of specified sheets
+)
+
+TARGETEXTRA=: ''
+
+BUILDOPTS=: 0 1 0 0 0 0 0
+
+PREBUILDFILE=: ''
+
+POSTBUILDFILE=: ''
+
+TESTFILE=: '~Addons/tables/taraxml/test/test.ijs'
+
+NOTES=: ''
+
+VERSION=: ''
+
+WINDOWS=: ''

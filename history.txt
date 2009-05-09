@@ -1,0 +1,10 @@
+tables/taraxml - change history
+
+== 1.0.2 ==
+ * Change name from sheetxml to taraxml.
+
+== 1.0.1 ==
+ * Fix paths
+
+== 1.0.0 ==
+ * Initial commit
