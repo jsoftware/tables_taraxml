@@ -2,7 +2,7 @@ NB. ---------------------------------------------------------
 NB. Tests for readxlxsheets
 Note 'To run all tests:'
   load 'tables/taraxml'
-  load 'tables/taraxml/taraxmltest'
+  load 'tables/taraxml/test/taraxmltest'
 )
 
 loc=. 3 : '> (4!:4 <''y'') { 4!:3 $0'
