@@ -103,8 +103,8 @@ startElement=: 4 : 0
   e=. y
   S=: S,<e
   if. e -: 'sheet' do.  NB. append name of sheet
-    SHTNAMES=: SHTNAMES ,< x getAttribute 'name'
-    SHTIDS=: SHTIDS ,< x getAttribute 'sheetId'
+    SHTNAMES=: SHTNAMES , DEL ,~ x getAttribute 'name'
+    SHTIDS=: SHTIDS , DEL ,~ x getAttribute 'sheetId'
   end.
   empty''
 )
@@ -114,7 +114,7 @@ endElement=: 3 : 0
 )
 
 endDocument=: 3 : 0
-  SHTNAMES
+  <;._2 SHTNAMES
 )
 
 process=: 3 : 0
@@ -159,7 +159,7 @@ startElement=: 4 : 0
 characters=: 3 : 0
   s2=. _2{.S
   if. s2 -: ;:'si t' do.
-    SHSTRNG=: SHSTRNG, < y
+    SHSTRNG=: SHSTRNG, y , DEL
   end.
 )
 
@@ -168,7 +168,7 @@ endElement=: 3 : 0
 )
 
 endDocument=: 3 : 0
-  SHSTRNG
+  <;._2 SHSTRNG
 )
 
 process=: 3 : 0

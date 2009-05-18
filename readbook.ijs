@@ -24,8 +24,8 @@ startElement=: 4 : 0
   e=. y
   S=: S,<e
   if. e -: 'sheet' do.  NB. append name of sheet
-    SHTNAMES=: SHTNAMES ,< x getAttribute 'name'
-    SHTIDS=: SHTIDS ,< x getAttribute 'sheetId'
+    SHTNAMES=: SHTNAMES , DEL ,~ x getAttribute 'name'
+    SHTIDS=: SHTIDS , DEL ,~ x getAttribute 'sheetId'
   end.
   empty''
 )
@@ -35,7 +35,7 @@ endElement=: 3 : 0
 )
 
 endDocument=: 3 : 0
-  SHTNAMES
+  <;._2 SHTNAMES
 )
 
 process=: 3 : 0

@@ -27,7 +27,7 @@ startElement=: 4 : 0
 characters=: 3 : 0
   s2=. _2{.S
   if. s2 -: ;:'si t' do.
-    SHSTRNG=: SHSTRNG, < y
+    SHSTRNG=: SHSTRNG, y , DEL
   end.
 )
 
@@ -36,7 +36,7 @@ endElement=: 3 : 0
 )
 
 endDocument=: 3 : 0
-  SHSTRNG
+  <;._2 SHSTRNG
 )
 
 process=: 3 : 0
