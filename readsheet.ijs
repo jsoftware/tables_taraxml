@@ -20,6 +20,7 @@ worksheet             NB. contains worksheet info
 
 caps=. a. {~ 65+i.26  NB. uppercase letters
 nums=. a. {~ 48+i.10  NB. numerals
+spelm=: >.--:2^32     NB. sparse element is lowest negative integer
 
 NB.*getColIdx v Calculates column index from A1 format
 NB. 26 = getColIdx 'AA5'
@@ -34,8 +35,9 @@ startElement=: 4 : 0
   S=: S,<y
   if. y -: 'dimension' do.  NB. initialize size of matrix for sheet
     'TL BR'=: (getRowIdx ,. getColIdx);._2 ':',~ x getAttribute 'ref'
-    'nrows ncols'=. >: -/ BR,:TL
-    SHEET=: (nrows,ncols)$ a:
+    'nrows ncols'=. >: BR
+    SHEET=: 1$. (nrows,ncols);0 1;spelm
+    STRGMSK=: 1$. nrows,ncols
   elseif. y -: 'row' do. NB.
     ROWIDX=: <: 0&". x getAttribute 'r'
     COLIDX=: ''
@@ -52,22 +54,32 @@ startElement=: 4 : 0
 characters=: 3 : 0
   s2=. _2{.S
   if. s2 -: ;:'c v' do.
-    VALS=: VALS, < _9999&". y
+    VALS=: VALS, spelm&". y
   end.
 )
 
 endElement=: 3 : 0
   if. y -: 'row' do. NB. update SHEET matrix
-    VALS=: (,SHSTRINGS {~ ISSTRG#VALS) (I.ISSTRG)} VALS
-    rcidx=. (ROWIDX;COLIDX) - &.> TL
-    SHEET=: VALS (<rcidx)}SHEET
+    NB.STRGMSK=: 1 (<ROWIDX;I.ISSTRG)}STRGMSK
+    NB.STRGMSK=: ISSTRG (<ROWIDX;COLIDX)}STRGMSK 
+    STRGMSK=: 1 (<ROWIDX;ISSTRG#COLIDX)}STRGMSK
+    NB.VALS=: (,SHSTRINGS {~ ISSTRG#VALS) (I.ISSTRG)} VALS
+    NB. rcidx=. (ROWIDX;COLIDX) - &.> TL
+    SHEET=: VALS (<ROWIDX;COLIDX)}SHEET
   end.
   S=: }:S
 )
 
 endDocument=: 3 : 0
-  SHEET=: ({.~ [: - TL + $) SHEET
-  8!:0^:(GETSTRG"_) SHEET
+  NB. convert to dense boxed matrix and amend strings.
+  strgs=. $.inv SHEET
+  strgs=. (-.STRGMSK)} strgs ,: #SHSTRINGS
+  STRGMSK=: STRGMSK +. SHEET=spelm
+  strgs=. strgs { SHSTRINGS,a:
+  SHEET=: <"0 $.inv SHEET
+  SHEET=: STRGMSK} SHEET,: strgs
+  NB. SHEET=: ({.~ [: - TL + $) SHEET  NB. handle offset TL
+  8!:0^:(GETSTRG"_) SHEET  NB. convert all to Strings if specified
 )
 
 process=: 4 : 0
