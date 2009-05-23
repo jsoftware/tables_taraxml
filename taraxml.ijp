@@ -4,11 +4,9 @@ coclass 'jproject'
 
 PRIMARYFILES=: 0 : 0
 ~Addons/tables/taraxml/init
-~Addons/tables/taraxml/user
 ~Addons/tables/taraxml/wkbook
-~Addons/tables/taraxml/readbook
-~Addons/tables/taraxml/readstrings
-~Addons/tables/taraxml/readsheet
+~Addons/tables/taraxml/xslt
+~Addons/tables/taraxml/user
 ~Addons/tables/taraxml/zfns
 )
 

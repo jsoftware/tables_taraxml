@@ -1,5 +1,8 @@
 tables/taraxml - change history
 
+== 1.0.3 ==
+ * Use xslt rather than sax to read workbook xml.
+
 == 1.0.2 ==
  * Change name from sheetxml to taraxml.
 

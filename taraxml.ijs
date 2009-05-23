@@ -2,7 +2,160 @@ NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
 NB.  retrieve contents of specified sheets
 NB. built from project: ~Addons/tables/taraxml/taraxml
 
-require 'xml/sax arc/zip/zfiles'
+require 'xml/xslt arc/zip/zfiles'
+
+NB. =========================================================
+NB. Workbook object 
+NB.  - methods/properties for Workbook
+
+coclass 'oxmlwkbook'
+coinsert 'ptaraxml'
+
+caps=. a. {~ 65+i.26  NB. uppercase letters
+nums=. a. {~ 48+i.10  NB. numerals
+errnum=: >.--:2^32     NB. error is lowest negative integer
+RMSTRG=: 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"'
+
+NB. ---------------------------------------------------------
+NB. Methods for oxmlwkbook
+
+create=: 3 : 0
+  FLN=: y   NB. Store filename as global
+  NB. read sheet names and store as global
+  SHEETNAMES=: getSheetNames zread 'xl/workbook.xml';FLN
+
+  NB. read shared strings and store as global
+  SHSTRINGS=: getStrings zread 'xl/sharedStrings.xml';FLN
+)
+
+destroy=: codestroy
+
+NB. getColIdx v Calculates column index from A1 format
+NB. 26 = getColIdx 'AA5'
+getColIdx=: ([: <: 26 #. (' ',caps) i. _5 {. (' ',nums) -.~ ])"1
+
+NB. getRowIdx v Calculates row index from A1 format
+getRowIdx=: ([: <: (' ',caps) 0&".@-.~ ])"1
+
+NB. getSheetNames v Reads sheet names in OpenXML workbook
+NB. result: list of boxed sheet names in workbook
+NB. y is: literal list of XML from workbook.xml in OpenXML workbook
+NB. x is: Optional XSLT to use to transform XML. Default WKBOOKSTY
+getSheetNames=: 3 : 0
+  WKBOOKSTY getSheetNames y
+:
+  res=. x xslt (RMSTRG;'') stringreplace y
+  {:"1 ] _2]\ <;._2 res 
+)
+
+
+NB. getStrings v Reads shared strings in OpenXML workbook
+NB. result: list of boxed shared strings in workbook
+NB. y is: literal list of XML from sharedStrings.xml in OpenXML workbook
+NB. x is: Optional XSLT to use to transform XML. Default SHSTRGSTY
+getStrings=: 3 : 0
+ SHSTRGSTY getStrings y
+ :
+  res=. <;._2 x xslt (RMSTRG;'') stringreplace y
+)
+
+NB. getSheet v Reads sheet contents from a sheet in an OpenXML workbook
+NB. result: table of boxed contents from worksheet
+NB. y is: literal list of XML from sheet?.xml in OpenXML workbook
+NB. x is: Optional XSLT to use to transform XML. Default SHEETSTY
+getSheet=: 3 : 0 
+  SHEETSTY getSheet y
+ :
+  res=. _3]\<;._2 x xslt (RMSTRG;'') stringreplace y
+  cellidx=. > 0 {"1  res
+  cellidx=. (getRowIdx ,. getColIdx) cellidx
+  strgmsk=. (<,'s') = 1 {"1  res
+  cellval=. errnum&".> 2 {"1  res
+  br=. >: >./cellidx
+
+  strgs=. SHSTRINGS {~ strgmsk#cellval
+  cellval=. strgs (I. strgmsk)} <"0 cellval
+  cellval=. cellval (<"1 cellidx)} br$a:
+
+  8!:0^:(GETSTRG"_) cellval  NB. convert all to Strings if specified
+)
+
+
+NB. ---------------------------------------------------------
+NB. XSLT for transforming XML files in OpenXML workbook
+
+Note 'XML hierachy of interest'
+workbook                 NB. workbook
+  sheets                 NB. worksheets
+    sheet name= sheetID= NB. worksheet, name and ids attributes
+)
+
+WKBOOKSTY=: 0 : 0
+<x:stylesheet xmlns:x="http://www.w3.org/1999/XSL/Transform" version="1.0">
+        <x:output method="text"/>
+    <x:template match="sheet">
+        <x:value-of select="@sheetId" /><x:text>&#127;</x:text>
+        <x:value-of select="@name" /><x:text>&#127;</x:text>
+    </x:template>
+    <x:template match="text()" />
+</x:stylesheet>
+)
+
+Note 'XML hierachy of interest'
+sst                 NB. sharedstrings
+  si  xml:space     NB. string instance, if empty rather than not set then xml:space="preserve"
+    t               NB. contains text for string instance
+)
+
+SHSTRGSTY=: 0 : 0
+<x:stylesheet xmlns:x="http://www.w3.org/1999/XSL/Transform" version="1.0">
+        <x:output method="text"/>
+    <x:template match="t">
+        <x:value-of select="." /><x:text>&#127;</x:text>
+    </x:template>
+    <x:template match="text()" />
+</x:stylesheet>
+)
+
+Note 'XML hierachy of interest'
+worksheet             NB. contains worksheet info
+  dimension ref=      NB. ref gives size of matrix
+  sheetData           NB. contains sheet data
+    row  r= spans=    NB. contains data for row 'r' (eg. ("1") over cols 'spans' (eg. "1:9")
+      c  r= t=        NB. contains cell info for ref 'r' (eg. "B2") and type 't' (eg. "s" - string)
+        v             NB. contains value for cell (if string then is index into si array in sharedStrings.xml)
+)
+
+SHEETSTY=: 0 : 0
+<x:stylesheet xmlns:x="http://www.w3.org/1999/XSL/Transform" version="1.0">
+        <x:output method="text"/>
+    <x:template match="c">
+        <x:value-of select="@r" /><x:text>&#127;</x:text>
+        <x:value-of select="@t" /><x:text>&#127;</x:text>
+        <x:value-of select="v" /><x:text>&#127;</x:text>
+    </x:template>
+    <x:template match="text()" />
+</x:stylesheet>
+)
+
+
+Note 'Testing'
+WKBOOKXML=: jpath '~Addons/tables/taraxml/test/workbook.xml'
+_2]\ <;._2 WKBOOKSTY xslt (' xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';'') stringreplace fread WKBOOKXML
+_2]\ <;._2 WKBOOKSTY xslt (RMSTRG;'') stringreplace fread WKBOOKXML
+
+SHSTRGXML=: jpath '~Addons/tables/taraxml/test/sharedStrings.xml'
+<;._2 SHSTRGSTY xslt (' xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';'') stringreplace fread SHSTRGXML
+<;._2 SHSTRGSTY xslt (RMSTRG;'') stringreplace fread SHSTRGXML
+
+Note 'Testing'
+SHEET1XML=: jpath '~Addons/tables/taraxml/test/sheet1.xml'
+SHEET2XML=: jpath '~Addons/tables/taraxml/test/sheet2.xml'
+_3]\ <;._2 SHEETSTY xslt (' xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';'') stringreplace fread SHEET1XML
+_3]\ <;._2 SHEETSTY xslt (RMSTRG;'') stringreplace fread SHEET1XML
+_3]\ <;._2 SHEETSTY xslt (RMSTRG;'') stringreplace fread SHEET2XML
+)
+
 
 NB. =========================================================
 NB. Define User Interface verbs
@@ -41,7 +194,7 @@ try.
   sheets=. ,&'.xml' &.> 'xl/worksheets/sheet'&, &.> 8!:0 >: shtidx
 
   msg=. 'error reading worksheet'
-  content=. nb&getSheet@([: zread ;&fln) each sheets
+  content=. getSheet__nb@([: zread ;&fln) each sheets
   destroy__nb''
   shts,.content
 catch.
@@ -55,231 +208,7 @@ NB. returns: boxed list of sheet names
 NB. y is: Excel file name
 NB. eg: readxlsheetnames 'test.xls'
 NB. read Excel Version 2007
-readxlxsheetnames=: getSheetNames@zread@('xl/workbook.xml'&;)
-
-
-NB. =========================================================
-NB. Workbook object 
-NB.  - stores properties of Workbook
-
-coclass 'oxmlwkbook'
-coinsert 'ptaraxml'
-
-create=: 3 : 0
-  FLN=: y   NB. Store filename as global
-  NB. read sheet names and store as global
-  SHEETNAMES=: getSheetNames zread 'xl/workbook.xml';FLN
-
-  NB. read shared strings and store as global
-  SHSTRINGS=: getStrings zread 'xl/sharedStrings.xml';FLN
-)
-
-destroy=: codestroy
-
-
-NB. =========================================================
-NB. Reading workbook (xl/workbook.xml)
-NB. reads list of worksheet names as boxed strings from workbook.xml
-
-saxclass 'oxmlbook'
-
-Note 'Testing'
-process_oxmlbook_ fread jpath '~addons/tables/taraxml/test/workbook.xml'
-)
-
-Note 'XML hierachy of interest'
-workbook                 NB. workbook
-  sheets                 NB. worksheets
-    sheet name= sheetID= NB. worksheet, name and ids attributes
-)
-
-startDocument=: 3 : 0
-  SHTNAMES=: ''
-  SHTIDS=: ''
-  S=: ''
-)
-
-startElement=: 4 : 0
-  e=. y
-  S=: S,<e
-  if. e -: 'sheet' do.  NB. append name of sheet
-    SHTNAMES=: SHTNAMES , DEL ,~ x getAttribute 'name'
-    SHTIDS=: SHTIDS , DEL ,~ x getAttribute 'sheetId'
-  end.
-  empty''
-)
-
-endElement=: 3 : 0
-  S=: }:S
-)
-
-endDocument=: 3 : 0
-  <;._2 SHTNAMES
-)
-
-process=: 3 : 0
-  p=. '' conew >coname''
-  startDocument__p ''
-  parse__p y
-  res=. endDocument__p''
-  destroy__p''
-  codestroy__p''
-  res
-)
-
-getSheetNames_ptaraxml_=: process_oxmlbook_
-
-
-NB. =========================================================
-NB. Reading Shared Strings (xl/sharedStrings.xml)
-NB. reads list of boxed strings from sharedStrings
-
-saxclass 'oxmlstrings'
-
-Note 'Testing'
-process_oxmlstrings_ fread jpath '~addons/tables/taraxml/test/sharedStrings.xml'
-)
-
-Note 'XML hierachy of interest'
-sst                 NB. sharedstrings
-  si  xml:space     NB. string instance, if empty rather than not set then xml:space="preserve"
-    t               NB. contains text for string instance
-)
-
-startDocument=: 3 : 0
-  SHSTRNG=: ''
-  S=: ''
-)
-
-startElement=: 4 : 0
-  S=: S,<y
-  empty''
-)
-
-characters=: 3 : 0
-  s2=. _2{.S
-  if. s2 -: ;:'si t' do.
-    SHSTRNG=: SHSTRNG, y , DEL
-  end.
-)
-
-endElement=: 3 : 0
-  S=: }:S
-)
-
-endDocument=: 3 : 0
-  <;._2 SHSTRNG
-)
-
-process=: 3 : 0
-  p=. '' conew >coname''
-  startDocument__p ''
-  parse__p y
-  res=. endDocument__p''
-  destroy__p''
-  codestroy__p''
-  res
-)
-
-getStrings_ptaraxml_=: process_oxmlstrings_
-
-
-NB. =========================================================
-NB. Reading Worksheets (xl/worksheets/sheet?.xml)
-NB. reads data from a worksheet to a boxed matrix
-
-saxclass 'oxmlsheet'
-
-Note 'Testing'
-process_oxmlsheet_ fread jpath '~addons/tables/taraxml/test/sheet1.xml'
-process_oxmlsheet_ fread jpath '~addons/tables/taraxml/test/sheet2.xml'
-)
-
-Note 'XML hierachy of interest'
-worksheet             NB. contains worksheet info
-  dimension ref=      NB. ref gives size of matrix
-  sheetData           NB. contains sheet data
-    row  r= spans=    NB. contains data for row 'r' (eg. ("1") over cols 'spans' (eg. "1:9")
-      c  r= t=        NB. contains cell info for ref 'r' (eg. "B2") and type 't' (eg. "s" - string)
-        v             NB. contains value for cell (if string then is index into si array in sharedStrings.xml)
-)
-
-caps=. a. {~ 65+i.26  NB. uppercase letters
-nums=. a. {~ 48+i.10  NB. numerals
-spelm=: >.--:2^32     NB. sparse element is lowest negative integer
-
-NB.*getColIdx v Calculates column index from A1 format
-NB. 26 = getColIdx 'AA5'
-getColIdx=: ([: <: 26 #. (' ',caps) i. _5 {. (' ',nums) -.~ ])"1
-getRowIdx=: ([: <: (' ',caps) 0&".@-.~ ])"1
-
-startDocument=: 3 : 0
-  S=: ''
-)
-
-startElement=: 4 : 0
-  S=: S,<y
-  if. y -: 'dimension' do.  NB. initialize size of matrix for sheet
-    'TL BR'=: (getRowIdx ,. getColIdx);._2 ':',~ x getAttribute 'ref'
-    'nrows ncols'=. >: BR
-    SHEET=: 1$. (nrows,ncols);0 1;spelm
-    STRGMSK=: 1$. nrows,ncols
-  elseif. y -: 'row' do. NB.
-    ROWIDX=: <: 0&". x getAttribute 'r'
-    COLIDX=: ''
-    VALS=: ''
-    ISSTRG=: ''
-  elseif. y -: (,'c') do.
-    cellref=. x getAttribute 'r'
-    ISSTRG=: ISSTRG, (,'s') -: x getAttribute 't'
-    COLIDX=: COLIDX, getColIdx cellref
-  end.
-  empty''
-)
-
-characters=: 3 : 0
-  s2=. _2{.S
-  if. s2 -: ;:'c v' do.
-    VALS=: VALS, spelm&". y
-  end.
-)
-
-endElement=: 3 : 0
-  if. y -: 'row' do. NB. update SHEET matrix
-    NB.STRGMSK=: 1 (<ROWIDX;I.ISSTRG)}STRGMSK
-    NB.STRGMSK=: ISSTRG (<ROWIDX;COLIDX)}STRGMSK 
-    STRGMSK=: 1 (<ROWIDX;ISSTRG#COLIDX)}STRGMSK
-    NB.VALS=: (,SHSTRINGS {~ ISSTRG#VALS) (I.ISSTRG)} VALS
-    NB. rcidx=. (ROWIDX;COLIDX) - &.> TL
-    SHEET=: VALS (<ROWIDX;COLIDX)}SHEET
-  end.
-  S=: }:S
-)
-
-endDocument=: 3 : 0
-  NB. convert to dense boxed matrix and amend strings.
-  strgs=. $.inv SHEET
-  strgs=. (-.STRGMSK)} strgs ,: #SHSTRINGS
-  STRGMSK=: STRGMSK +. SHEET=spelm
-  strgs=. strgs { SHSTRINGS,a:
-  SHEET=: <"0 $.inv SHEET
-  SHEET=: STRGMSK} SHEET,: strgs
-  NB. SHEET=: ({.~ [: - TL + $) SHEET  NB. handle offset TL
-  8!:0^:(GETSTRG"_) SHEET  NB. convert all to Strings if specified
-)
-
-process=: 4 : 0
-  p=. '' conew >coname''
-  coinsert__p x
-  startDocument__p ''
-  parse__p y
-  res=. endDocument__p''
-  destroy__p''
-  codestroy__p''
-  res
-)
-
-getSheet_ptaraxml_=: process_oxmlsheet_
+readxlxsheetnames=: getSheetNames2_oxmlwkbook_@zread@('xl/workbook.xml'&;)
 
 
 NB. =========================================================

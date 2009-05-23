@@ -35,7 +35,7 @@ try.
   sheets=. ,&'.xml' &.> 'xl/worksheets/sheet'&, &.> 8!:0 >: shtidx
 
   msg=. 'error reading worksheet'
-  content=. nb&getSheet@([: zread ;&fln) each sheets
+  content=. getSheet__nb@([: zread ;&fln) each sheets
   destroy__nb''
   shts,.content
 catch.
@@ -49,4 +49,4 @@ NB. returns: boxed list of sheet names
 NB. y is: Excel file name
 NB. eg: readxlsheetnames 'test.xls'
 NB. read Excel Version 2007
-readxlxsheetnames=: getSheetNames@zread@('xl/workbook.xml'&;)
+readxlxsheetnames=: getSheetNames2_oxmlwkbook_@zread@('xl/workbook.xml'&;)

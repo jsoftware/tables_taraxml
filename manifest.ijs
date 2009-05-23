@@ -5,7 +5,7 @@ CAPTION=: 'Platform independent system for reading OpenXML (Excel 2007 *.xlsx) f
 DESCRIPTION=: 0 : 0
 The TaraXML addon reads files in Microsoft Excel's OpenXML format. For reading and writing older non-XML Excel formats see the Tara addon.
 
-TaraXML depends on the arc/zip and xml/sax addons.
+TaraXML depends on the arc/zip and xml/xslt addons.
 TaraXML was developed by Ric Sherlock. 
 )
 
@@ -15,7 +15,7 @@ RELEASE=: 'j602'
 
 DEPENDS=: 0 : 0
 arc/zip/zfiles
-xml/sax
+xml/xslt
 )
 
 FILES=: 0 : 0

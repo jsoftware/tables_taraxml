@@ -1,1 +1,1 @@
-require 'xml/sax arc/zip/zfiles'
+require 'xml/xslt arc/zip/zfiles'
