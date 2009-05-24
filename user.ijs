@@ -49,4 +49,4 @@ NB. returns: boxed list of sheet names
 NB. y is: Excel file name
 NB. eg: readxlsheetnames 'test.xls'
 NB. read Excel Version 2007
-readxlxsheetnames=: getSheetNames2_oxmlwkbook_@zread@('xl/workbook.xml'&;)
+readxlxsheetnames=: getSheetNames_oxmlwkbook_@zread@('xl/workbook.xml'&;)

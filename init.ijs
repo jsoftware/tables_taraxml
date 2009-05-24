@@ -1,1 +1,2 @@
-require 'xml/xslt arc/zip/zfiles'
+require 'arc/zip/zfiles'
+NB. require 'xml/xslt'

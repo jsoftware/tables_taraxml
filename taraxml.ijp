@@ -1,4 +1,4 @@
-NB. project file: c:/users/rsherloc/documents/j602-user/jsrc/addons/tables/taraxml/taraxml
+NB. project file: c:/users/ric/documents/j602-user/jsrc/addons/tables/taraxml/taraxml
 
 coclass 'jproject'
 
@@ -8,6 +8,8 @@ PRIMARYFILES=: 0 : 0
 ~Addons/tables/taraxml/xslt
 ~Addons/tables/taraxml/user
 ~Addons/tables/taraxml/zfns
+~Addons/tables/taraxml/xsltcall
+~Addons/tables/taraxml/wdooo
 )
 
 PRIMARYLIBS=: ''
