@@ -225,7 +225,7 @@ NB. xslt using pcall
 NB. error handling not yet implemented
 
 xslt_win=: 4 : 0
-p=. conew 'wdooo'
+p=. '' conew 'wdooo'
 try.
   try.
     'xbase xtemp'=. olecreate__p 'MSXML2.DOMDocument.6.0'
@@ -692,6 +692,7 @@ oleerrno=: S_OK
 init=: 0
 
 create=: 3 : 0
+'ole32 CoInitialize > i x'&cd^:IFCONSOLE 0
 oleerrno=: S_OK
 init=: 0
 )
@@ -702,6 +703,7 @@ if. init do.
   memf temp
   base iuRelease ''
 end.
+'ole32 CoUninitialize > n'&cd^:IFCONSOLE ''
 codestroy''
 )
 

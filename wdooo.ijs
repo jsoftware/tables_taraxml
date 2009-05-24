@@ -417,6 +417,7 @@ oleerrno=: S_OK
 init=: 0
 
 create=: 3 : 0
+'ole32 CoInitialize > i x'&cd^:IFCONSOLE 0
 oleerrno=: S_OK
 init=: 0
 )
@@ -427,6 +428,7 @@ if. init do.
   memf temp
   base iuRelease ''
 end.
+'ole32 CoUninitialize > n'&cd^:IFCONSOLE ''
 codestroy''
 )
 
