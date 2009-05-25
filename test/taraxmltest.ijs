@@ -12,7 +12,7 @@ NB. Test data
 x3=: <"0 i.12 20            NB. boxed int array
 x4=: 4 2$'abcd';'kdisd';'eiij asj' NB. boxed char array
 x4a=: 4 2$'abcd';'';'eiij asj' NB. boxed char array with empty
-x5=: 4 2$'abcd';54;(ucp'鳴箏金粟柱');2;4.4 NB. boxed mixed array
+x5=: 4 2$'abcd';54;(ucp^:IFWIN32 '鳴箏金粟柱');2;4.4 NB. boxed mixed array
 x7=: 'data 1';'data 2'      NB. boxed char vector
 x9=: <"0 ]15.6 12.9 54.33   NB. boxed flt vector
 x12=: 'Box Int array';<x3   NB. With sheetnames
@@ -29,16 +29,15 @@ fnme=: PATH,'test.xlsx'
 NB.Tests
 test2=: 3 : 0
   locs=. conames 1
-  assert. x12 -: readxlxsheets fnme
-  assert. x13 -: 'Box Chr array' readxlxsheets fnme
-  assert. x14 -: 2 readxlxsheets fnme
-  assert. (x13,:x14) -: 1 2 readxlxsheets fnme
-  assert. x20 -: 'Offset' readxlxsheets fnme
-  assert. (x21,:x20) -: ('DiFF mix array';'OFFSET') readxlxsheets fnme
-  assert. x22 -: '' readxlxsheets fnme
-  
-  assert. ('Box Mix array';<8!:0 (0j16": &.> (<2;0){ x5) (<2;0)} x5) -: 2 readxlxsheets fnme;<1
-  assert. locs -: conames 1  NB. check all objects cleaned up
+  assert x12 -: readxlxsheets fnme
+  assert x13 -: 'Box Chr array' readxlxsheets fnme
+  assert x14 -: 2 readxlxsheets fnme
+  assert (x13,:x14) -: 1 2 readxlxsheets fnme
+  assert x20 -: 'Offset' readxlxsheets fnme
+  assert (x21,:x20) -: ('DiFF mix array';'OFFSET') readxlxsheets fnme
+  assert x22 -: '' readxlxsheets fnme
+  assert ('Box Mix array';<8!:0 (0j16": &.> (<2;0){ x5) (<2;0)} x5) -: 2 readxlxsheets fnme;<1
+  assert locs -: conames 1  NB. check all objects cleaned up
   'taraxmltest passed'
 )
 

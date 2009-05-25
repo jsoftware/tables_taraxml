@@ -6,7 +6,7 @@ DESCRIPTION=: 0 : 0
 The TaraXML addon reads files in Microsoft Excel's OpenXML format. For reading and writing older non-XML Excel formats see the Tara addon.
 
 TaraXML depends on the arc/zip and xml/xslt addons.
-TaraXML was developed by Ric Sherlock. 
+TaraXML was developed by Ric Sherlock and Bill Lam. 
 )
 
 VERSION=: '1.0.2'
