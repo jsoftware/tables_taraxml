@@ -64,12 +64,14 @@ getSheet=: 3 : 0
   cellidx=. > 0 {"1  res
   cellidx=. (getRowIdx ,. getColIdx) cellidx
   strgmsk=. (<,'s') = 1 {"1  res
-  cellval=. errnum&".> 2 {"1  res
+  cellval=. 2 {"1  res
   br=. >: >./cellidx
 
-  strgs=. SHSTRINGS {~ strgmsk#cellval
-  cellval=. strgs (I. strgmsk)} <"0 cellval
+  strgs=. (SHSTRINGS,a:) {~  (#SHSTRINGS)&".> strgmsk#cellval
+  validx=. I.-.strgmsk
+  if. -. GETSTRG do.
+    cellval=. (errnum&". &.> validx{cellval) validx} cellval
+  end.
+  cellval=. strgs (I. strgmsk)} cellval
   cellval=. cellval (<"1 cellidx)} br$a:
-
-  8!:0^:(GETSTRG"_) cellval  NB. convert all to Strings if specified
 )
