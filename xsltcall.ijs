@@ -25,7 +25,7 @@ try.
   olemethod__p xbase ; 'loadXML' ; x
   oleset__p ybase ; 'async' ; 0
   olemethod__p ybase ; 'loadXML' ; y
-  r=. olevalue__p VT_DISPATCH olemethod__p ybase ; 'transformNode' ; xbase
+  r=. olevalue__p VT_DISPATCH__p olemethod__p ybase ; 'transformNode' ; xbase
 catch.
   smoutput 'error ',oleqer__p ''
 end.

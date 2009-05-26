@@ -15,6 +15,7 @@ RELEASE=: 'j602'
 
 DEPENDS=: 0 : 0
 arc/zip/zfiles
+general/pcall
 xml/xslt
 )
 
