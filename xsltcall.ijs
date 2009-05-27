@@ -1,8 +1,7 @@
 NB. first load wdooo.ijs
 NB.
 NB. =========================================================
-NB. xslt using pcall
-NB. error handling not yet implemented
+
 
 xslt_win=: 4 : 0
 p=. '' conew 'wdooo'
@@ -45,7 +44,7 @@ xslt_linux=: 4 : 0
 
 3 : 0 ''
   if. UNAME -: 'Win' do.
-    xslt_z_ =: xslt_win_ptaraxml_
+    xslt_z_ =: xslt_win2_ptaraxml_
   elseif. UNAME -: 'Linux' do.
     xslt_z_ =: xslt_linux_ptaraxml_
   end.

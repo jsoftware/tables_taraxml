@@ -1,8 +1,8 @@
 tables/taraxml - change history
 
 == 1.0.3 ==
- * Improve performance
- * Support jconsole on Windows
+ * add: Support jconsole on Windows
+ * chg: Improve performance
 
 == 1.0.2 ==
  * Change name from sheetxml to taraxml.
