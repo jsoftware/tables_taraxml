@@ -3,7 +3,14 @@ NB.  retrieve contents of specified sheets
 NB. built from project: ~Addons/tables/taraxml/taraxml
 
 require 'arc/zip/zfiles'
-NB. require 'xml/xslt'
+require 'xml/xslt'
+3 : 0 ''  
+  NB. always use pcall version 
+  NB. wd version crashes on big sheets
+  if. 'Win'-:UNAME do.
+    load 'xml/xslt/win_pcall'
+  end.
+)
 
 NB. =========================================================
 NB. Workbook object 
@@ -218,113 +225,4 @@ NB. =========================================================
 NB. Export to z locale
 readxlxsheets_z_=: readxlxsheets_ptaraxml_
 readxlxsheetnames_z_=: readxlxsheetnames_ptaraxml_
-
-
-NB. xslt using pcall
-require 'general/pcall/disp'
-
-parseError=: 3 : 0
-  pe=. disp 'parseError' get__y''
-  if. 0~: 0".c=. 'errorCode' get__pe'' do. 
-    line=. 'line' get__pe''
-    pos=. 'linePos' get__pe''
-    src=. 'srcText' get__pe''
-    t=. 'Error ',c,' at ',line,',',pos
-    t=. t,LF, 'reason' get__pe
-    destroy__pe''
-    if. #src do.
-      t=. t,LF,src
-      t=. t,LF,(}.(0".pos)#' '),'^'
-    end.
-    1[smoutput t
-  else.
-   destroy__pe''  
-   0 end.
-)
-
-xslt_win2=: 4 : 0
-  try.
-    try.
-      qx=. disp 'MSXML2.DOMDocument.6.0'
-      qy=. disp 'MSXML2.DOMDocument.6.0'
-    catch.
-      try.
-        qx=. disp 'MSXML2.DOMDocument.4.0'
-        qy=. disp 'MSXML2.DOMDocument.4.0'
-      catch.
-        try.
-          qx=. disp 'MSXML2.DOMDocument.3.0'
-          qy=. disp 'MSXML2.DOMDocument.3.0'
-        catch. smoutput 'MSXML v3, 4 or 6 is required' throw. end.
-      end.
-    end.
-    'async' put__qx 0
-    'loadXML' do__qx x
-    NB. if. parseError qx do. throw. end.
-    'async' put__qy 0
-    'loadXML' do__qy y
-    NB. if. parseError qy do. throw. end.
-    try.
-      r=. 'transformNode' do__qy <<P__qx
-NB.       destroy__qx''
-NB.       destroy__qy''
-    catch. smoutput 'error qer'  NB. what should go here?
-    throw. end.
-  catcht. r=. '' end.
-  r
-)
-
-
-NB. first load wdooo.ijs
-NB.
-NB. =========================================================
-
-
-xslt_win=: 4 : 0
-p=. '' conew 'wdooo'
-try.
-  try.
-    'xbase xtemp'=. olecreate__p 'MSXML2.DOMDocument.6.0'
-    'ybase ytemp'=. olecreate__p 'MSXML2.DOMDocument.6.0'
-  catch.
-    try.
-      'xbase xtemp'=. olecreate__p 'MSXML2.DOMDocument.4.0'
-      'ybase ytemp'=. olecreate__p 'MSXML2.DOMDocument.4.0'
-    catch.
-      try.
-        'xbase xtemp'=. olecreate__p 'MSXML2.DOMDocument.3.0'
-        'ybase ytemp'=. olecreate__p 'MSXML2.DOMDocument.3.0'
-      catch. smoutput 'MSXML v3 or 4 is required' throw. end.
-    end.
-  end.
-  oleset__p xbase ; 'async' ; 0
-  olemethod__p xbase ; 'loadXML' ; x
-  oleset__p ybase ; 'async' ; 0
-  olemethod__p ybase ; 'loadXML' ; y
-  r=. olevalue__p VT_DISPATCH__p olemethod__p ybase ; 'transformNode' ; xbase
-catch.
-  smoutput 'error ',oleqer__p ''
-end.
-destroy__p ''
-r
-)
-
-
-xslt_linux=: 4 : 0                                                                                              
-  host=. 2!:0                                                                                                  
-  tmpsty=. '/tmp/xlststy'                                                                                      
-  tmpf=. '/tmp/xlstfile'                                                                                       
-  (<tmpsty) 1!:2~ x                                                                                            
-  (<tmpf) 1!:2~ y                                                                                              
-  host 'xsltproc ', tmpsty, ' ', tmpf                                                                          
-)
-
-3 : 0 ''
-  if. UNAME -: 'Win' do.
-    xslt_z_ =: xslt_win2_ptaraxml_
-  elseif. UNAME -: 'Linux' do.
-    xslt_z_ =: xslt_linux_ptaraxml_
-  end.
-''
-)
 

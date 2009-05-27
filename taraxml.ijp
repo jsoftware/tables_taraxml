@@ -8,13 +8,15 @@ PRIMARYFILES=: 0 : 0
 ~Addons/tables/taraxml/xslt
 ~Addons/tables/taraxml/user
 ~Addons/tables/taraxml/zfns
-~Addons/tables/taraxml/pcallxslt
-~Addons/tables/taraxml/xsltcall
 )
 
 PRIMARYLIBS=: ''
 
-DEVFILES=: '~Addons/tables/taraxml/wdooo'
+DEVFILES=: 0 : 0
+~Addons/tables/taraxml/wdooo
+~Addons/tables/taraxml/pcallxslt
+~Addons/tables/taraxml/xsltcall
+)
 
 DEVLIBS=: ''
 

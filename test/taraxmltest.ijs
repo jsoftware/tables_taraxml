@@ -12,7 +12,7 @@ NB. Test data
 x3=: <"0 i.12 20            NB. boxed int array
 x4=: 4 2$'abcd';'kdisd';'eiij asj' NB. boxed char array
 x4a=: 4 2$'abcd';'';'eiij asj' NB. boxed char array with empty
-x5=: 4 2$'abcd';54;(ucp^:IFWIN32 '鳴箏金粟柱');2;4.4 NB. boxed mixed array
+x5=: 4 2$'abcd';54;('鳴箏金粟柱');2;4.4 NB. boxed mixed array
 x6=: (,:-) 5 50000 0.005 0.0000005 500000000 500000000.5  NB. numeric format
 x7=: 'data 1';'data 2'      NB. boxed char vector
 x9=: <"0 ]15.6 12.9 54.33   NB. boxed flt vector
