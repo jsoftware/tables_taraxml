@@ -2,10 +2,10 @@ NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
 NB.  retrieve contents of specified sheets
 NB. built from project: ~Addons/tables/taraxml/taraxml
 
-require 'arc/zip/zfiles'
-require 'xml/xslt'
+require 'arc/zip/zfiles xml/xslt'
+
 3 : 0 ''  
-  NB. always use pcall version 
+  NB. always use pcall version on Windows
   NB. wd version crashes on big sheets
   if. 'Win'-:UNAME do.
     load 'xml/xslt/win_pcall'
@@ -14,15 +14,87 @@ require 'xml/xslt'
 
 NB. =========================================================
 NB. Workbook object 
-NB.  - methods/properties for Workbook
+NB.  - methods/properties for a Workbook
 
 coclass 'oxmlwkbook'
 coinsert 'ptaraxml'
 
+
+NB. ---------------------------------------------------------
+NB. XSLT for transforming XML files in OpenXML workbook
+
+Note 'XML hierachy of interest for workbook.xml'
+workbook                 NB. workbook
+  sheets                 NB. worksheets
+    sheet name= sheetID= NB. worksheet, name and ids attributes
+)
+
+NB. Retrieve worksheet names from xl/workbook.xml
+WKBOOKSTY=: 0 : 0
+<x:stylesheet  version="1.0"
+   xmlns:x="http://www.w3.org/1999/XSL/Transform"
+   xmlns:t="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+   exclude-result-prefixes="x t"
+>
+    <x:output method="text" encoding="UTF-8" />
+    <x:template match="t:sheet">
+        <x:value-of select="@name" /><x:text>&#127;</x:text>
+    </x:template>
+    <x:template match="text()" />
+</x:stylesheet>
+)
+
+Note 'XML hierachy of interest for sharedStrings.xml'
+sst                 NB. sharedstrings
+  si  xml:space     NB. string instance, if empty rather than not set then xml:space="preserve"
+    t               NB. contains text for string instance
+)
+
+NB. Retrieve shared strings from xl/sharedStrings.xml
+SHSTRGSTY=: 0 : 0
+<x:stylesheet version="1.0"
+   xmlns:x="http://www.w3.org/1999/XSL/Transform"
+   xmlns:t="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+   exclude-result-prefixes="x t"
+>
+    <x:output method="text" encoding="UTF-8"/>
+    <x:template match="t:t">
+        <x:value-of select="." /><x:text>&#127;</x:text>
+    </x:template>
+    <x:template match="text()" />
+</x:stylesheet>
+)
+
+Note 'XML hierachy of interest for sheet?.xml'
+worksheet             NB. contains worksheet info
+  dimension ref=      NB. ref gives size of matrix
+  sheetData           NB. contains sheet data
+    row  r= spans=    NB. contains data for row 'r' (eg. ("1") over cols 'spans' (eg. "1:9")
+      c  r= t=        NB. contains cell info for ref 'r' (eg. "B2") and type 't' (eg. "s" - string)
+        v             NB. contains value for cell (if string then is index into si array in sharedStrings.xml)
+)
+
+NB. Retrieve worksheet contents from xl/worksheets/sheet?.xml
+SHEETSTY=: 0 : 0
+<x:stylesheet version="1.0"
+   xmlns:x="http://www.w3.org/1999/XSL/Transform"
+   xmlns:t="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+   exclude-result-prefixes="x t"
+>
+        <x:output method="text"/>
+    <x:template match="t:c">
+        <x:value-of select="@r" /><x:text>&#127;</x:text>
+        <x:value-of select="@t" /><x:text>&#127;</x:text>
+        <x:value-of select="t:v" /><x:text>&#127;</x:text>
+    </x:template>
+    <x:template match="text()" />
+</x:stylesheet>
+)
+
+
 caps=. a. {~ 65+i.26  NB. uppercase letters
 nums=. a. {~ 48+i.10  NB. numerals
 errnum=: >.--:2^32     NB. error is lowest negative integer
-RMSTRG=: 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"'
 
 NB. ---------------------------------------------------------
 NB. Methods for oxmlwkbook
@@ -49,23 +121,13 @@ NB. getSheetNames v Reads sheet names in OpenXML workbook
 NB. result: list of boxed sheet names in workbook
 NB. y is: literal list of XML from workbook.xml in OpenXML workbook
 NB. x is: Optional XSLT to use to transform XML. Default WKBOOKSTY
-getSheetNames=: 3 : 0
-  WKBOOKSTY getSheetNames y
-:
-  res=. x xslt (RMSTRG;'') stringreplace y
-  {:"1 ] _2]\ <;._2 res 
-)
-
+getSheetNames=: [: <;._2 WKBOOKSTY&xslt
 
 NB. getStrings v Reads shared strings in OpenXML workbook
 NB. result: list of boxed shared strings in workbook
 NB. y is: literal list of XML from sharedStrings.xml in OpenXML workbook
 NB. x is: Optional XSLT to use to transform XML. Default SHSTRGSTY
-getStrings=: 3 : 0
- SHSTRGSTY getStrings y
- :
-  res=. <;._2 x xslt (RMSTRG;'') stringreplace y
-)
+getStrings=: [: <;._2 SHSTRGSTY&xslt
 
 NB. getSheet v Reads sheet contents from a sheet in an OpenXML workbook
 NB. result: table of boxed contents from worksheet
@@ -74,11 +136,12 @@ NB. x is: Optional XSLT to use to transform XML. Default SHEETSTY
 getSheet=: 3 : 0 
   SHEETSTY getSheet y
  :
-  res=. _3]\<;._2 x xslt (RMSTRG;'') stringreplace y
+  res=. _3]\<;._2 x xslt y
   cellidx=. > 0 {"1  res
-  cellidx=. (getRowIdx ,. getColIdx) cellidx
   strgmsk=. (<,'s') = 1 {"1  res
   cellval=. 2 {"1  res
+  erase 'res'
+  cellidx=. (getRowIdx ,. getColIdx) cellidx
   br=. >: >./cellidx
 
   strgs=. (SHSTRINGS,a:) {~  (#SHSTRINGS)&".> strgmsk#cellval
@@ -88,82 +151,6 @@ getSheet=: 3 : 0
   end.
   cellval=. strgs (I. strgmsk)} cellval
   cellval=. cellval (<"1 cellidx)} br$a:
-)
-
-
-NB. ---------------------------------------------------------
-NB. XSLT for transforming XML files in OpenXML workbook
-
-Note 'XML hierachy of interest'
-workbook                 NB. workbook
-  sheets                 NB. worksheets
-    sheet name= sheetID= NB. worksheet, name and ids attributes
-)
-
-WKBOOKSTY=: 0 : 0
-<x:stylesheet xmlns:x="http://www.w3.org/1999/XSL/Transform" version="1.0">
-        <x:output method="text"/>
-    <x:template match="sheet">
-        <x:value-of select="@sheetId" /><x:text>&#127;</x:text>
-        <x:value-of select="@name" /><x:text>&#127;</x:text>
-    </x:template>
-    <x:template match="text()" />
-</x:stylesheet>
-)
-
-Note 'XML hierachy of interest'
-sst                 NB. sharedstrings
-  si  xml:space     NB. string instance, if empty rather than not set then xml:space="preserve"
-    t               NB. contains text for string instance
-)
-
-SHSTRGSTY=: 0 : 0
-<x:stylesheet xmlns:x="http://www.w3.org/1999/XSL/Transform" version="1.0">
-        <x:output method="text"/>
-    <x:template match="t">
-        <x:value-of select="." /><x:text>&#127;</x:text>
-    </x:template>
-    <x:template match="text()" />
-</x:stylesheet>
-)
-
-Note 'XML hierachy of interest'
-worksheet             NB. contains worksheet info
-  dimension ref=      NB. ref gives size of matrix
-  sheetData           NB. contains sheet data
-    row  r= spans=    NB. contains data for row 'r' (eg. ("1") over cols 'spans' (eg. "1:9")
-      c  r= t=        NB. contains cell info for ref 'r' (eg. "B2") and type 't' (eg. "s" - string)
-        v             NB. contains value for cell (if string then is index into si array in sharedStrings.xml)
-)
-
-SHEETSTY=: 0 : 0
-<x:stylesheet xmlns:x="http://www.w3.org/1999/XSL/Transform" version="1.0">
-        <x:output method="text"/>
-    <x:template match="c">
-        <x:value-of select="@r" /><x:text>&#127;</x:text>
-        <x:value-of select="@t" /><x:text>&#127;</x:text>
-        <x:value-of select="v" /><x:text>&#127;</x:text>
-    </x:template>
-    <x:template match="text()" />
-</x:stylesheet>
-)
-
-
-Note 'Testing'
-WKBOOKXML=: jpath '~Addons/tables/taraxml/test/workbook.xml'
-_2]\ <;._2 WKBOOKSTY xslt (' xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';'') stringreplace fread WKBOOKXML
-_2]\ <;._2 WKBOOKSTY xslt (RMSTRG;'') stringreplace fread WKBOOKXML
-
-SHSTRGXML=: jpath '~Addons/tables/taraxml/test/sharedStrings.xml'
-<;._2 SHSTRGSTY xslt (' xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';'') stringreplace fread SHSTRGXML
-<;._2 SHSTRGSTY xslt (RMSTRG;'') stringreplace fread SHSTRGXML
-
-Note 'Testing'
-SHEET1XML=: jpath '~Addons/tables/taraxml/test/sheet1.xml'
-SHEET2XML=: jpath '~Addons/tables/taraxml/test/sheet2.xml'
-_3]\ <;._2 SHEETSTY xslt (' xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';'') stringreplace fread SHEET1XML
-_3]\ <;._2 SHEETSTY xslt (RMSTRG;'') stringreplace fread SHEET1XML
-_3]\ <;._2 SHEETSTY xslt (RMSTRG;'') stringreplace fread SHEET2XML
 )
 
 

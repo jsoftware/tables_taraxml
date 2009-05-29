@@ -4,27 +4,25 @@ coclass 'jproject'
 
 PRIMARYFILES=: 0 : 0
 ~Addons/tables/taraxml/init
-~Addons/tables/taraxml/wkbook
-~Addons/tables/taraxml/xslt
+~Addons/tables/taraxml/wkbookinit
+~Addons/tables/taraxml/wkbookxslt
+~Addons/tables/taraxml/wkbookmeth
 ~Addons/tables/taraxml/user
 ~Addons/tables/taraxml/zfns
 )
 
 PRIMARYLIBS=: ''
 
-DEVFILES=: 0 : 0
-~Addons/tables/taraxml/wdooo
-~Addons/tables/taraxml/pcallxslt
-~Addons/tables/taraxml/xsltcall
-)
+DEVFILES=: ''
 
 DEVLIBS=: ''
 
 OTHERFILES=: 0 : 0
 ~Addons/tables/taraxml/history.txt
 ~Addons/tables/taraxml/manifest.ijs
-~Addons/tables/taraxml/test/taraxmltest.ijs
+~Addons/tables/taraxml/test/taraxmlread.ijs
 ~Addons/tables/taraxml/test/test_taraxml.ijs
+~Addons/tables/taraxml/test/testxslt.ijs
 )
 
 TARGETFILE=: '~Addons/tables/taraxml/taraxml.ijs'

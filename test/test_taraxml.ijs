@@ -1,6 +1,6 @@
 NB. Tests for taraxml
 
-Note 'To run all tests:'
+Note 'To run all test scripts:'
   load 'tables/taraxml'
   load 'tables/taraxml/test/test_taraxml'
 )
@@ -11,4 +11,4 @@ PATH=. getpath_j_ loc''
 NB. -------------------------------------------------------
 NB. scripts for testing
 
-load PATH,'taraxmltest.ijs'
+load PATH,'taraxmlread.ijs'

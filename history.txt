@@ -3,6 +3,9 @@ tables/taraxml - change history
 == 1.0.3 ==
  * add: Support jconsole on Windows
  * chg: Improve performance
+ * chg: Uses XSLT instead of SAX to process xml docs
+ * chg: requires general/pcall and xml/xslt addons
+ * chg: xml/sax addon no longer required  
 
 == 1.0.2 ==
  * Change name from sheetxml to taraxml.
