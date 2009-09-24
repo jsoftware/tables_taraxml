@@ -1,14 +1,14 @@
-NB. project file: c:/users/rsherloc/documents/j602-user/jsrc/addons/tables/taraxml/taraxml
+NB. project file: ~Addons/tables/taraxml/taraxml
 
 coclass 'jproject'
 
 PRIMARYFILES=: 0 : 0
-~Addons/tables/taraxml/init
-~Addons/tables/taraxml/wkbookinit
-~Addons/tables/taraxml/wkbookxslt
-~Addons/tables/taraxml/wkbookmeth
-~Addons/tables/taraxml/user
-~Addons/tables/taraxml/zfns
+~Addons/tables/taraxml/source/init
+~Addons/tables/taraxml/source/wkbookinit
+~Addons/tables/taraxml/source/wkbookxslt
+~Addons/tables/taraxml/source/wkbookmeth
+~Addons/tables/taraxml/source/user
+~Addons/tables/taraxml/source/zfns
 )
 
 PRIMARYLIBS=: ''
