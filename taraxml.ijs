@@ -1,6 +1,8 @@
+NB. 
+NB. built from project: ~Addons/tables/taraxml/taraxml
 NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
 NB.  retrieve contents of specified sheets
-NB. built from project: ~Addons/tables/taraxml/taraxml
+
 
 require 'arc/zip/zfiles xml/xslt'
 

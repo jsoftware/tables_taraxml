@@ -1,3 +1,6 @@
+NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
+NB.  retrieve contents of specified sheets
+
 require 'arc/zip/zfiles xml/xslt'
 
 3 : 0 ''  

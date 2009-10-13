@@ -1,4 +1,4 @@
-NB. project file: ~Addons/tables/taraxml/taraxml
+NB. project file: c:/users/rsherloc/documents/j602-user/jsrc/addons/tables/taraxml/taraxml
 
 coclass 'jproject'
 
@@ -30,8 +30,7 @@ TARGETFILE=: '~Addons/tables/taraxml/taraxml.ijs'
 TARGETLOCALE=: ''
 
 TARGETHEADER=: 0 : 0
-NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
-NB.  retrieve contents of specified sheets
+
 )
 
 TARGETEXTRA=: ''
