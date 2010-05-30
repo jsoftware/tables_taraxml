@@ -1,5 +1,7 @@
 NB. 
 NB. built from project: ~Addons/tables/taraxml/taraxml
+NB. =========================================================
+NB. tables/taraxml
 NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
 NB.  retrieve contents of specified sheets
 
@@ -186,7 +188,7 @@ try.
   shtnames=. SHEETNAMES__nb
   if.     a: -: shts               do. shtidx=. i. #shtnames NB. x is ''
   elseif. *./ 1 4 e.~ 3!:0 &> shts do. shtidx=. > shts       NB. x is int list
-  elseif. do. shtidx=. shts i.&(tolower&.>"_)~ shtnames  NB. case insensitive
+  elseif. do. shtidx=. shts i.&(tolower&.>"_)~ shtnames      NB. case insensitive
   end.
   (msg=. 'worksheet not found') assert shtidx < #shtnames
   shts=. shtidx { shtnames
