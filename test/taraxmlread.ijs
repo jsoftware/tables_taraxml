@@ -6,7 +6,7 @@ Note 'To run tests:'
 )
 
 loc=. 3 : '> (4!:4 <''y'') { 4!:3 $0'
-PATH=. getpath_j_ loc''
+PATH=. getpath_j_ jpathsep loc''
 
 NB. Test data
 x3=: <"0 i.12 20            NB. boxed int array

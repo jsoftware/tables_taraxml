@@ -1,5 +1,8 @@
 tables/taraxml - change history
 
+== 1.0.4 ==
+ * chg: j701
+
 == 1.0.3 ==
  * add: Support jconsole on Windows
  * chg: Improve performance

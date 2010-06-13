@@ -6,7 +6,7 @@ Note 'To run all test scripts:'
 )
 
 loc=. 3 : '> (4!:4 <''y'') { 4!:3 $0'
-PATH=. getpath_j_ loc''
+PATH=. getpath_j_ jpathsep loc''
 
 NB. -------------------------------------------------------
 NB. scripts for testing
