@@ -5,7 +5,7 @@ Note 'To run all test scripts:'
   load 'tables/taraxml/test/test_taraxml'
 )
 
-loc=. 3 : '> (4!:4 <''y'') { 4!:3 $0'
+loc=. 3 : 'jpathsep > (4!:4 <''y'') { 4!:3 $0'
 PATH=. getpath_j_ jpathsep loc''
 
 NB. -------------------------------------------------------
