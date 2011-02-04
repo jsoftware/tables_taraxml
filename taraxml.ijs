@@ -1,10 +1,7 @@
-NB. 
-NB. built from project: ~Addons/tables/taraxml/taraxml
 NB. =========================================================
 NB. tables/taraxml
 NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
 NB.  retrieve contents of specified sheets
-
 
 require 'arc/zip/zfiles xml/xslt'
 
@@ -15,15 +12,12 @@ require 'arc/zip/zfiles xml/xslt'
     load 'xml/xslt/win_pcall'
   end.
 )
-
 NB. =========================================================
 NB. Workbook object 
 NB.  - methods/properties for a Workbook
 
 coclass 'oxmlwkbook'
 coinsert 'ptaraxml'
-
-
 NB. ---------------------------------------------------------
 NB. XSLT for transforming XML files in OpenXML workbook
 
@@ -94,8 +88,6 @@ SHEETSTY=: 0 : 0
     <x:template match="text()" />
 </x:stylesheet>
 )
-
-
 caps=. a. {~ 65+i.26  NB. uppercase letters
 nums=. a. {~ 48+i.10  NB. numerals
 errnum=: >.--:2^32     NB. error is lowest negative integer
@@ -156,8 +148,6 @@ getSheet=: 3 : 0
   cellval=. strgs (I. strgmsk)} cellval
   cellval=. cellval (<"1 cellidx)} br$a:
 )
-
-
 NB. =========================================================
 NB. Define User Interface verbs
 coclass 'ptaraxml'
@@ -210,10 +200,7 @@ NB. y is: Excel file name
 NB. eg: readxlsheetnames 'test.xls'
 NB. read Excel Version 2007
 readxlxsheetnames=: getSheetNames_oxmlwkbook_@zread@('xl/workbook.xml'&;)
-
-
 NB. =========================================================
 NB. Export to z locale
 readxlxsheets_z_=: readxlxsheets_ptaraxml_
 readxlxsheetnames_z_=: readxlxsheetnames_ptaraxml_
-
