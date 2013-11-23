@@ -3,15 +3,13 @@ NB. tables/taraxml
 NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
 NB.  retrieve contents of specified sheets
 
-require 'arc/zip/zfiles xml/xslt'
+TARAXMLCMDLINE_z_=: (TARAXMLCMDLINE_z_"_)^:(0=4!:0<'TARAXMLCMDLINE_z_') 0~:FHS
 
-3 : 0 ''  
-  NB. always use pcall version on Windows
-  NB. wd version crashes on big sheets
-  if. 'Win'-:UNAME do.
-    load 'xml/xslt/win_pcall'
-  end.
-)
+require^:(-.TARAXMLCMDLINE) 'arc/zip/zfiles xml/xslt'
+
+NB. always use pcall version on Windows
+NB. wd version crashes on big sheets
+require^:(IFWIN>TARAXMLCMDLINE) 'xml/xslt/win_pcall'
 NB. =========================================================
 NB. Workbook object 
 NB.  - methods/properties for a Workbook
@@ -98,13 +96,41 @@ NB. Methods for oxmlwkbook
 create=: 3 : 0
   FLN=: y   NB. Store filename as global
   NB. read sheet names and store as global
-  SHEETNAMES=: getSheetNames zread 'xl/workbook.xml';FLN
+  SHEETNAMES=: getSheetNames (zreadproc`zread_zfiles_@.(-.TARAXMLCMDLINE)) 'xl/workbook.xml';FLN
 
   NB. read shared strings and store as global
-  SHSTRINGS=: getStrings zread 'xl/sharedStrings.xml';FLN
+  SHSTRINGS=: getStrings (zreadproc`zread_zfiles_@.(-.TARAXMLCMDLINE)) 'xl/sharedStrings.xml';FLN
 )
 
 destroy=: codestroy
+
+hostcmd=: ([: 2!:0 '('"_ , ] , ' || true)'"_)`spawn_jtask_@.IFWIN
+
+NB. used if TARAXMLCMDLINE
+NB. require command line utility unzip
+NB. use ~temp
+zreadproc=: 3 : 0
+'FN ZN'=. y
+if. 0=fexist ZN do. 1 return. end.
+tmp=. jpath '~temp'
+hostcmd 'unzip -o -qq "',ZN,'" -d "',tmp,'" "',FN,'" 2>/dev/null'
+r=. fread f=. jpath '~temp/',FN
+ferase ::0: f
+r
+)
+
+NB. used if TARAXMLCMDLINE
+NB. require command line utility xsltproc
+NB. use ~temp
+xsltproc=: 4 : 0
+x fwrite <style=. jpath '~temp/xmlstyle'
+y fwrite <file=. jpath '~temp/xmlfile'
+a=. hostcmd 'xsltproc "',style,'" "',file,'" 2>/dev/null'
+ferase ::0: style
+ferase ::0: file
+assert. 0-.@-: a [ 'xsltproc error'
+a
+)
 
 NB. getColIdx v Calculates column index from A1 format
 NB. 26 = getColIdx 'AA5'
@@ -117,22 +143,22 @@ NB. getSheetNames v Reads sheet names in OpenXML workbook
 NB. result: list of boxed sheet names in workbook
 NB. y is: literal list of XML from workbook.xml in OpenXML workbook
 NB. x is: Optional XSLT to use to transform XML. Default WKBOOKSTY
-getSheetNames=: [: <;._2 WKBOOKSTY&xslt
+getSheetNames=: [: <;._2 WKBOOKSTY&(xsltproc`xslt_pxslt_@.(-.TARAXMLCMDLINE))
 
 NB. getStrings v Reads shared strings in OpenXML workbook
 NB. result: list of boxed shared strings in workbook
 NB. y is: literal list of XML from sharedStrings.xml in OpenXML workbook
 NB. x is: Optional XSLT to use to transform XML. Default SHSTRGSTY
-getStrings=: [: <;._2 SHSTRGSTY&xslt
+getStrings=: [: <;._2 SHSTRGSTY&(xsltproc`xslt_pxslt_@.(-.TARAXMLCMDLINE))
 
 NB. getSheet v Reads sheet contents from a sheet in an OpenXML workbook
 NB. result: table of boxed contents from worksheet
 NB. y is: literal list of XML from sheet?.xml in OpenXML workbook
 NB. x is: Optional XSLT to use to transform XML. Default SHEETSTY
-getSheet=: 3 : 0 
+getSheet=: 3 : 0
   SHEETSTY getSheet y
  :
-  res=. _3]\<;._2 x xslt y
+  res=. _3]\<;._2 x xsltproc`xslt_pxslt_@.(-.TARAXMLCMDLINE) y
   cellidx=. > 0 {"1  res
   strgmsk=. (<,'s') = 1 {"1  res
   cellval=. 2 {"1  res
@@ -185,7 +211,7 @@ try.
   sheets=. ,&'.xml' &.> 'xl/worksheets/sheet'&, &.> 8!:0 >: shtidx
 
   msg=. 'error reading worksheet'
-  content=. getSheet__nb@([: zread ;&fln) each sheets
+  content=. getSheet__nb@([: (zreadproc_oxmlwkbook_`zread_zfiles_@.(-.TARAXMLCMDLINE)) ;&fln) each sheets
   destroy__nb''
   shts,.content
 catch.
@@ -199,7 +225,7 @@ NB. returns: boxed list of sheet names
 NB. y is: Excel file name
 NB. eg: readxlsheetnames 'test.xls'
 NB. read Excel Version 2007
-readxlxsheetnames=: getSheetNames_oxmlwkbook_@zread@('xl/workbook.xml'&;)
+readxlxsheetnames=: getSheetNames_oxmlwkbook_@(zreadproc_oxmlwkbook_`zread_zfiles_@.(-.TARAXMLCMDLINE))@('xl/workbook.xml'&;)
 NB. =========================================================
 NB. Export to z locale
 readxlxsheets_z_=: readxlxsheets_ptaraxml_
