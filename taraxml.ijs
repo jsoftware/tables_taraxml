@@ -3,19 +3,32 @@ NB. tables/taraxml
 NB. Reading Excel 2007 OpenXML format (.xlsx) workbooks
 NB.  retrieve contents of specified sheets
 
-TARAXMLCMDLINE_z_=: (TARAXMLCMDLINE_z_"_)^:(0=4!:0<'TARAXMLCMDLINE_z_') 0~:FHS
+TARAXMLCMDLINE_z_=: 1 NB. (TARAXMLCMDLINE_z_"_)^:(0=4!:0<'TARAXMLCMDLINE_z_') 0~:FHS
 
 require^:(-.TARAXMLCMDLINE) 'arc/zip/zfiles xml/xslt'
 
 NB. always use pcall version on Windows
 NB. wd version crashes on big sheets
-require^:(IFWIN>TARAXMLCMDLINE) 'xml/xslt/win_pcall'
+NB. require^:(IFWIN>TARAXMLCMDLINE) 'xml/xslt/win_pcall'
 NB. =========================================================
 NB. Workbook object 
 NB.  - methods/properties for a Workbook
 
 coclass 'oxmlwkbook'
 coinsert 'ptaraxml'
+
+3 : 0''
+if. IFWIN do.
+  if. 1=ftype '~tools/zip/unzip.exe' do.
+    unzipcmd=: winpathsep jpath '~tools/zip/unzip.exe'
+  else.
+    unzipcmd=: 'unzip.exe'
+  end.
+else.
+  unzipcmd=: 'unzip'
+end.
+EMPTY
+)
 NB. ---------------------------------------------------------
 NB. XSLT for transforming XML files in OpenXML workbook
 
@@ -111,10 +124,11 @@ NB. require command line utility unzip
 NB. use ~temp
 zreadproc=: 3 : 0
 'FN ZN'=. y
-if. 0=fexist ZN do. 1 return. end.
-tmp=. jpath '~temp'
-hostcmd 'unzip -o -qq "',ZN,'" -d "',tmp,'" "',FN,'" 2>/dev/null'
-r=. fread f=. jpath '~temp/',FN
+if. 1~:ftype ZN do. 1 return. end.
+tmp=. jpath '~temp/taraxml'
+mkdir_j_ tmp
+hostcmd unzipcmd, ' -o -qq "',(winpathsep^:IFWIN ZN),'" -d "',(winpathsep^:IFWIN tmp),'" "',(winpathsep^:IFWIN FN),'"', IFUNIX#' 2>/dev/null'
+r=. fread f=. jpath '~temp/taraxml/',FN
 ferase ::0: f
 r
 )
@@ -125,7 +139,7 @@ NB. use ~temp
 xsltproc=: 4 : 0
 x fwrite <style=. jpath '~temp/xmlstyle'
 y fwrite <file=. jpath '~temp/xmlfile'
-a=. hostcmd 'xsltproc "',style,'" "',file,'" 2>/dev/null'
+a=. hostcmd 'xsltproc "',(winpathsep^:IFWIN style),'" "',(winpathsep^:IFWIN file),'"', IFUNIX#' 2>/dev/null'
 ferase ::0: style
 ferase ::0: file
 assert. 0-.@-: a [ 'xsltproc error'
@@ -197,7 +211,7 @@ readxlxsheets=: 3 : 0
 try.
   'fln strng'=. 2{.!.(<0) boxopen y
   shts=. boxopen x
-  (msg=. 'file not found') assert fexist fln
+  (msg=. 'file not found') assert 1=ftype fln
 
   nb=. fln conew 'oxmlwkbook'
   GETSTRG__nb=: strng

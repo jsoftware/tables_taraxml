@@ -1,5 +1,9 @@
 tables/taraxml - change history
 
+== 1.0.6 ==
+ * chg: j804
+ * chg: remove dependency on other addons
+
 == 1.0.5 ==
  * chg: j801
  * add: optional command line unzip and xsltproc instead of addons
