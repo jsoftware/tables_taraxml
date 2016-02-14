@@ -5,12 +5,14 @@ CAPTION=: 'Platform independent system for reading OpenXML (Excel 2007 *.xlsx) f
 DESCRIPTION=: 0 : 0
 The TaraXML addon reads files in Microsoft Excel's OpenXML format. For reading and writing older non-XML Excel formats see the Tara addon.
 
-TaraXML depends on a command line utility xsltproc which should be available in various linux distro.
-Windows binaries are available from ftp://ftp.zlatkovic.com/libxml/ and ftp://ftp.zlatkovic.com/libxml/64bit/
+TaraXML depends on a command line transformation utility.
+Linux: xsltproc which should be available in various linux distro.
+Windows: msxsl.exe available from http://www.microsoft.com/en-us/download/details.aspx?id=21714
+  msxsl.exe depends on msxml4 (not msxml6!) http://www.microsoft.com/en-us/download/details.aspx?id=19662
 TaraXML was developed by Ric Sherlock and Bill Lam. 
 )
 
-VERSION=: '1.0.6'
+VERSION=: '1.0.7'
 
 RELEASE=: 'j804'
 

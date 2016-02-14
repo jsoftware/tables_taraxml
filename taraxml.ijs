@@ -139,7 +139,15 @@ NB. use ~temp
 xsltproc=: 4 : 0
 x fwrite <style=. jpath '~temp/xmlstyle'
 y fwrite <file=. jpath '~temp/xmlfile'
-a=. hostcmd 'xsltproc "',(winpathsep^:IFWIN style),'" "',(winpathsep^:IFWIN file),'"', IFUNIX#' 2>/dev/null'
+if. IFWIN do.
+  a=. hostcmd 'msxsl "',(winpathsep^:IFWIN file),'" "',(winpathsep^:IFWIN style),'"'
+else.
+  a=. hostcmd 'xsltproc "',(winpathsep^:IFWIN style),'" "',(winpathsep^:IFWIN file),'"', IFUNIX#' 2>/dev/null'
+end.
+NB. check BOM
+if. (255 254{a.)-:2{.a do.
+  a=. 8 u: 6 u: 2}.a
+end.
 ferase ::0: style
 ferase ::0: file
 assert. 0-.@-: a [ 'xsltproc error'
