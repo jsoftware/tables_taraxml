@@ -12,9 +12,9 @@ Windows: msxsl.exe available from http://www.microsoft.com/en-us/download/detail
 TaraXML was developed by Ric Sherlock and Bill Lam. 
 )
 
-VERSION=: '1.0.7'
+VERSION=: '1.0.8'
 
-RELEASE=: 'j804'
+RELEASE=: 'j804 j805'
 
 FILES=: 0 : 0
 history.txt
