@@ -14,7 +14,9 @@ TaraXML was developed by Ric Sherlock and Bill Lam.
 
 VERSION=: '1.0.10'
 
-RELEASE=: 'j804 j805 j806 j807'
+RELEASE=: ''
+
+FOLDER=: 'tables/taraxml'
 
 FILES=: 0 : 0
 history.txt

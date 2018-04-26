@@ -1,0 +1,11 @@
+NB. project: ~Addons/tables/taraxml/source/source
+NB.
+NB. defines list of source files.
+NB. path defaults to project directory.
+
+init.ijs
+wkbookinit.ijs
+wkbookxslt.ijs
+wkbookmeth.ijs
+user.ijs
+zfns.ijs
