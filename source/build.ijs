@@ -1,6 +1,6 @@
 NB. build
 
-writesource_jp_ '~Addons/tables/taraxml/source/source';'~Addons/tables/taraxml/taraxml.ijs'
+writesource_jp_ '~Addons/tables/taraxml/source';'~Addons/tables/taraxml/taraxml.ijs'
 
 (jpath '~addons/tables/taraxml/taraxml.ijs') (fcopynew ::0:) jpath '~Addons/tables/taraxml/taraxml.ijs'
 
