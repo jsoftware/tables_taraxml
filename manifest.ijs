@@ -7,12 +7,11 @@ The TaraXML addon reads files in Microsoft Excel's OpenXML format. For reading a
 
 TaraXML depends on a command line transformation utility.
 Linux: xsltproc which should be available in various linux distro.
-Windows: msxsl.exe available from http://www.microsoft.com/en-us/download/details.aspx?id=21714
-  msxsl.exe depends on msxml4 (not msxml6!) http://www.microsoft.com/en-us/download/details.aspx?id=19662
+Windows: copy lib/* to ~bin folder
 TaraXML was developed by Ric Sherlock and Bill Lam. 
 )
 
-VERSION=: '1.0.10'
+VERSION=: '1.0.11'
 
 RELEASE=: ''
 
@@ -25,4 +24,14 @@ taraxml.ijs
 test/taraxmlread.ijs
 test/test.ijs
 test/test.xlsx
+)
+
+FILEWIN64=: 0 : 0
+libexslt-0.dll
+libiconv-2.dll
+libwinpthread-1.dll
+libxml2-2.dll
+libxslt-1.dll
+xsltproc.exe
+zlib1.dll
 )
