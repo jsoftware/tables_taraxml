@@ -38,7 +38,7 @@ NB. use ~temp
 xsltproc=: 4 : 0
 x fwrite <style=. jpath '~temp/xmlstyle'
 y fwrite <file=. jpath '~temp/xmlfile'
-if. IFWIN do.
+if. 0[IFWIN do.
   a=. hostcmd 'msxsl "',(winpathsep^:IFWIN file),'" "',(winpathsep^:IFWIN style),'"'
 else.
   a=. hostcmd 'xsltproc "',(winpathsep^:IFWIN style),'" "',(winpathsep^:IFWIN file),'"', IFUNIX#' 2>/dev/null'
