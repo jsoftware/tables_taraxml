@@ -11,7 +11,7 @@ Windows: copy lib/* to ~bin folder
 TaraXML was developed by Ric Sherlock and Bill Lam. 
 )
 
-VERSION=: '1.0.12'
+VERSION=: '1.0.13'
 
 RELEASE=: ''
 
@@ -26,7 +26,7 @@ test/test.ijs
 test/test.xlsx
 )
 
-FILEWIN64=: 0 : 0
+FILESWIN64=: 0 : 0
 lib/libexslt-0.dll
 lib/libiconv-2.dll
 lib/libwinpthread-1.dll
