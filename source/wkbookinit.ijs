@@ -15,5 +15,10 @@ if. IFWIN do.
 else.
   unzipcmd=: 'unzip'
 end.
+if. IFWINE do.
+  tmp=: (2!:5'TEMP'),'\taraxml'
+else.
+  tmp=: jpath '~temp/taraxml'
+end.
 EMPTY
 )

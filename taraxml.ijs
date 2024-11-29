@@ -27,6 +27,11 @@ if. IFWIN do.
 else.
   unzipcmd=: 'unzip'
 end.
+if. IFWINE do.
+  tmp=: (2!:5'TEMP'),'\taraxml'
+else.
+  tmp=: jpath '~temp/taraxml'
+end.
 EMPTY
 )
 NB. ---------------------------------------------------------
@@ -125,10 +130,9 @@ NB. use ~temp
 zreadproc=: 3 : 0
 'FN ZN'=. y
 if. 1~:ftype ZN do. 1 return. end.
-tmp=. jpath '~temp/taraxml'
 mkdir_j_ tmp
 hostcmd unzipcmd, ' -o -qq "',(winpathsep^:IFWIN ZN),'" -d "',(winpathsep^:IFWIN tmp),'" "',(winpathsep^:IFWIN FN),'"', IFUNIX#' 2>/dev/null'
-r=. fread f=. jpath '~temp/taraxml/',FN
+r=. fread f=. tmp,'/',FN
 ferase ::0: f
 r
 )
@@ -137,8 +141,8 @@ NB. used if TARAXMLCMDLINE
 NB. require command line utility xsltproc
 NB. use ~temp
 xsltproc=: 4 : 0
-x fwrite <style=. jpath '~temp/xmlstyle'
-y fwrite <file=. jpath '~temp/xmlfile'
+x fwrite <style=. tmp,'/xmlstyle'
+y fwrite <file=. tmp,'/xmlfile'
 if. 0[IFWIN do.
   a=. hostcmd 'msxsl "',(winpathsep^:IFWIN file),'" "',(winpathsep^:IFWIN style),'"'
 else.
