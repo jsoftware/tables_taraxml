@@ -143,8 +143,13 @@ NB. use ~temp
 xsltproc=: 4 : 0
 x fwrite <style=. tmp,'/xmlstyle'
 y fwrite <file=. tmp,'/xmlfile'
-if. 0[IFWIN do.
-  a=. hostcmd 'msxsl "',(winpathsep^:IFWIN file),'" "',(winpathsep^:IFWIN style),'"'
+if. IFWIN do.
+  if. 1~:ftype f=. jpath '~addons/tables/taraxml/lib/xsltproc.exe' do.
+    if. 1~:ftype f=. jpath '~bin/xsltproc.exe' do.
+      f=. 'xsltproc.exe'
+    end.
+  end.
+  a=. hostcmd '"',f,'" "',(winpathsep^:IFWIN style),'" "',(winpathsep^:IFWIN file),'"'
 else.
   a=. hostcmd 'xsltproc "',(winpathsep^:IFWIN style),'" "',(winpathsep^:IFWIN file),'"', IFUNIX#' 2>/dev/null'
 end.
